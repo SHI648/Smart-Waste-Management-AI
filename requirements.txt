@@ -1,0 +1,41 @@
+requirements.txt
+# ---------------------------------------------------
+# Smart Waste Management System using AI
+# requirements.txt
+# All dependencies with compatible, tested versions
+# ---------------------------------------------------
+
+# Core Web Framework
+Flask==3.0.3
+Werkzeug==3.0.3
+Flask-SQLAlchemy==3.1.1
+Jinja2==3.1.4
+itsdangerous==2.2.0
+click==8.1.7
+gunicorn==22.0.0
+python-dotenv==1.0.1
+
+# Deep Learning / AI (MobileNetV2 based classification)
+tensorflow==2.16.1
+keras==3.3.3
+h5py==3.11.0
+protobuf==4.25.3
+
+# Computer Vision (Image Upload + Live Camera Detection)
+opencv-python==4.10.0.84
+Pillow==10.3.0
+
+# Data Processing
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.5.0
+
+# Visualization (used during training / dashboard analytics)
+matplotlib==3.9.0
+
+# Database
+SQLAlchemy==2.0.30
+
+# Utility
+tqdm==4.66.4
+requests==2.32.3

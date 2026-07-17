@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoSort AI — Smart Waste Classification</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+:root {
+  --bg-navy-950: #0A1220;
+  --bg-navy-900: #101B2D;
+  --bg-navy-850: #142238;
+
+  --teal: #14B8A6;
+  --teal-soft: #5EEAD4;
+  --cyan: #38BDF8;
+  --amber: #F5A623;
+
+  --frost-100: #F1F5F9;
+  --frost-300: #CBD5E1;
+  --slate-400: #94A3B8;
+
+  --glass-fill: rgba(255, 255, 255, 0.055);
+  --glass-fill-strong: rgba(255, 255, 255, 0.09);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+
+  --font-display: "Sora", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--frost-100);
+  background: radial-gradient(1200px 800px at 15% -10%, #10243a 0%, transparent 60%),
+              radial-gradient(1000px 700px at 110% 10%, #0f2a2a 0%, transparent 55%),
+              linear-gradient(180deg, var(--bg-navy-950) 0%, var(--bg-navy-900) 45%, var(--bg-navy-950) 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; }
+.container { max-width: 1220px; }
+
+/* Navbar */
+.glass-nav {
+  background: rgba(10, 18, 32, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0.85rem 0;
+  transition: background 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+}
+
+.glass-nav.is-scrolled {
+  background: rgba(9, 15, 27, 0.85);
+  box-shadow: var(--glass-shadow);
+  padding: 0.55rem 0;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--teal), var(--cyan));
+  color: #06131a;
+  font-size: 1.1rem;
+  box-shadow: 0 0 22px rgba(20, 184, 166, 0.45);
+}
+
+.brand-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--frost-100);
+  letter-spacing: -0.01em;
+}
+
+.brand-accent { color: var(--teal-soft); }
+
+.navbar-nav .nav-link {
+  color: var(--frost-300);
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--frost-100);
+  background: var(--glass-fill);
+}
+
+.btn-nav-cta {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #06131a;
+  background: linear-gradient(135deg, var(--teal), var(--teal-soft));
+  border-radius: 999px;
+  padding: 0.55rem 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.btn-nav-cta:hover {
+  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.4);
+  transform: translateY(-1px);
+  color: #06131a;
+}
+
+/* Hero */
+.hero { padding: 168px 0 96px; position: relative; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--teal-soft);
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 4.2vw, 3.4rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.4rem;
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, var(--teal-soft), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.08rem;
+  color: var(--frost-300);
+  max-width: 520px;
+  margin-bottom: 2.1rem;
+  line-height: 1.65;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.75rem;
+}
+
+.btn-primary-glow, .btn-outline-glass {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.98rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.btn-primary-glow {
+  color: #06131a;
+  background: linear-gradient(135deg, var(--teal), var(--teal-soft));
+  box-shadow: 0 10px 30px rgba(20, 184, 166, 0.28);
+}
+
+.btn-primary-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(20, 184, 166, 0.42);
+  color: #06131a;
+}
+
+.btn-outline-glass {
+  color: var(--frost-100);
+  background: var(--glass-fill);
+  border-color: var(--glass-border);
+  backdrop-filter: blur(10px);
+}
+
+.btn-outline-glass:hover {
+  background: var(--glass-fill-strong);
+  transform: translateY(-2px);
+  color: var(--frost-100);
+}
+
+.hero-trust { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+.trust-item { display: flex; flex-direction: column; }
+
+.trust-number {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--frost-100);
+}
+
+.trust-number small { font-size: 0.85rem; color: var(--slate-400); }
+.trust-label { font-size: 0.78rem; color: var(--slate-400); }
+.trust-divider { width: 1px; height: 32px; background: var(--glass-border); }
+
+/* Scan panel (signature element) */
+.scan-panel { position: relative; max-width: 440px; margin: 0 auto; }
+
+.scan-panel-glow {
+  position: absolute;
+  inset: -30px;
+  background: radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.25), transparent 65%);
+  filter: blur(10px);
+  z-index: 0;
+}
+
+.scan-frame {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-lg);
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--teal-soft);
+  opacity: 0.85;
+  animation: corner-pulse 2.6s ease-in-out infinite;
+}
+
+.corner-tl { top: 22px; left: 22px; border-right: none; border-bottom: none; border-top-left-radius: 8px; }
+.corner-tr { top: 22px; right: 22px; border-left: none; border-bottom: none; border-top-right-radius: 8px; animation-delay: 0.2s; }
+.corner-bl { bottom: 22px; left: 22px; border-right: none; border-top: none; border-bottom-left-radius: 8px; animation-delay: 0.4s; }
+.corner-br { bottom: 22px; right: 22px; border-left: none; border-top: none; border-bottom-right-radius: 8px; animation-delay: 0.6s; }
+
+@keyframes corner-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+.scan-line {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  box-shadow: 0 0 16px 2px rgba(56, 189, 248, 0.7);
+  animation: scan-sweep 3.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes scan-sweep {
+  0%   { top: 12%; opacity: 0; }
+  8%   { opacity: 1; }
+  48%  { top: 88%; opacity: 1; }
+  56%  { opacity: 0; }
+  100% { top: 12%; opacity: 0; }
+}
+
+.scan-subject { font-size: 4.2rem; color: var(--frost-300); opacity: 0.55; }
+
+.result-chip {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(9, 15, 27, 0.75);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  opacity: 0;
+  animation: chip-reveal 3.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.result-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal-soft);
+  box-shadow: 0 0 8px var(--teal-soft);
+}
+
+.result-confidence { color: var(--amber); font-weight: 600; }
+
+@keyframes chip-reveal {
+  0%, 52% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  62%, 92% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+}
+
+.scan-caption { text-align: center; color: var(--slate-400); font-size: 0.85rem; margin-top: 1rem; }
+
+/* CTA strip */
+.cta-strip { padding: 0 0 96px; }
+
+.cta-strip-inner {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  padding: 2.4rem 2.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.cta-strip-inner h3 { font-family: var(--font-display); font-weight: 700; margin-bottom: 0.3rem; }
+.cta-strip-inner p { color: var(--frost-300); margin: 0; }
+
+/* Features */
+.features { padding: 20px 0 120px; }
+.section-heading { max-width: 640px; margin: 0 auto 3.2rem; }
+
+.section-heading h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  margin: 0.6rem 0;
+}
+
+.section-subtitle { color: var(--frost-300); }
+
+.feature-card {
+  height: 100%;
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  border-radius: var(--radius-md);
+  padding: 2rem 1.8rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  border-color: rgba(94, 234, 212, 0.35);
+}
+
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--teal-soft);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.18), rgba(56, 189, 248, 0.12));
+  border: 1px solid rgba(94, 234, 212, 0.25);
+  margin-bottom: 1.2rem;
+}
+
+.feature-card h5 { font-family: var(--font-display); font-weight: 600; margin-bottom: 0.6rem; }
+.feature-card p { color: var(--frost-300); font-size: 0.94rem; line-height: 1.6; margin-bottom: 1rem; }
+
+.feature-link {
+  color: var(--teal-soft);
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: gap 0.2s ease;
+}
+
+.feature-link:hover { gap: 0.55rem; color: var(--teal-soft); }
+
+.feature-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.feature-tags span {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--slate-400);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--glass-border);
+  background: rgba(6, 11, 20, 0.6);
+  padding-top: 3.2rem;
+}
+
+.footer-tagline { color: var(--slate-400); font-size: 0.92rem; max-width: 380px; line-height: 1.6; }
+
+.footer-heading {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--frost-300);
+  margin-bottom: 1rem;
+}
+
+.footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+.footer-links a { color: var(--slate-400); font-size: 0.92rem; transition: color 0.2s ease; }
+.footer-links a:hover { color: var(--teal-soft); }
+
+.footer-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.footer-tags span {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--frost-300);
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--glass-border);
+  padding: 1.4rem 0;
+  color: var(--slate-400);
+  font-size: 0.85rem;
+}
+
+.footer-meta { font-family: var(--font-mono); font-size: 0.78rem; }
+
+/* Scroll reveal */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+[data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+[data-reveal-delay="1"].is-visible { transition-delay: 0.12s; }
+[data-reveal-delay="2"].is-visible { transition-delay: 0.24s; }
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .hero { padding: 140px 0 64px; }
+  .scan-panel { max-width: 340px; margin-top: 2rem; }
+  .cta-strip-inner { flex-direction: column; align-items: flex-start; text-align: left; }
+}
+
+@media (max-width: 575.98px) {
+  .hero-actions { flex-direction: column; }
+  .btn-primary-glow, .btn-outline-glass { width: 100%; justify-content: center; }
+  .hero-trust { gap: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--teal-soft);
+  outline-offset: 2px;
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top glass-nav" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('main.home') }}">
+      <span class="brand-mark"><i class="bi bi-recycle"></i></span>
+      <span class="brand-text">EcoSort<span class="brand-accent">AI</span></span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('upload.upload_page') }}">Upload</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('camera.camera_page') }}">Live Camera</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard.dashboard_page') }}">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard.history_page') }}">History</a></li>
+        <li class="nav-item ms-lg-2">
+          <a class="btn btn-nav-cta" href="{{ url_for('upload.upload_page') }}">
+            <i class="bi bi-stars"></i> Start Prediction
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center gy-5">
+
+      <div class="col-lg-6 hero-copy" data-reveal>
+        <span class="eyebrow"><i class="bi bi-cpu"></i> AI-Powered Waste Sorting</span>
+        <h1 class="hero-title">
+          Point your camera.<br>
+          Know exactly <span class="text-gradient">where it goes.</span>
+        </h1>
+        <p class="hero-subtitle">
+          EcoSort AI uses a MobileNetV2 vision model to classify waste into 8 categories
+          in real time, then hands you a clear disposal method, a recycling tip, and its
+          environmental impact — instantly.
+        </p>
+
+        <div class="hero-actions">
+          <a href="{{ url_for('upload.upload_page') }}" class="btn btn-primary-glow">
+            <i class="bi bi-cloud-arrow-up"></i> Upload Image
+          </a>
+          <a href="{{ url_for('camera.camera_page') }}" class="btn btn-outline-glass">
+            <i class="bi bi-camera-video"></i> Open Camera
+          </a>
+        </div>
+
+        <div class="hero-trust">
+          <div class="trust-item">
+            <span class="trust-number">8</span>
+            <span class="trust-label">Waste Categories</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-number">&lt;200<small>ms</small></span>
+            <span class="trust-label">Avg. Inference Time</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-number">24/7</span>
+            <span class="trust-label">Always Available</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-reveal data-reveal-delay="1">
+        <div class="scan-panel">
+          <div class="scan-panel-glow"></div>
+          <div class="scan-frame">
+            <span class="corner corner-tl"></span>
+            <span class="corner corner-tr"></span>
+            <span class="corner corner-bl"></span>
+            <span class="corner corner-br"></span>
+            <div class="scan-line"></div>
+
+            <div class="scan-subject">
+              <i class="bi bi-cup-straw"></i>
+            </div>
+
+            <div class="result-chip">
+              <span class="result-dot"></span>
+              <span class="result-text">Plastic</span>
+              <span class="result-confidence">92%</span>
+            </div>
+          </div>
+          <p class="scan-caption">Live detection preview</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="cta-strip" data-reveal>
+  <div class="container">
+    <div class="cta-strip-inner">
+      <div>
+        <h3>Ready to see it sort?</h3>
+        <p>Snap a photo or turn on your camera — the model does the rest.</p>
+      </div>
+      <a href="{{ url_for('upload.upload_page') }}" class="btn btn-primary-glow btn-lg">
+        <i class="bi bi-magic"></i> Start Prediction
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-heading text-center" data-reveal>
+      <span class="eyebrow justify-content-center"><i class="bi bi-grid-1x2"></i> What's Inside</span>
+      <h2>Everything you need to sort smarter</h2>
+      <p class="section-subtitle">From a single photo to a full analytics view of your waste habits.</p>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-md-6 col-lg-4" data-reveal>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+          <h5>Image Upload</h5>
+          <p>Upload any photo of an item and get an instant AI classification with confidence scores.</p>
+          <a href="{{ url_for('upload.upload_page') }}" class="feature-link">Upload now <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="1">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-camera-video"></i></div>
+          <h5>Live Camera Detection</h5>
+          <p>Point your device camera at an object and classify it in real time, no upload required.</p>
+          <a href="{{ url_for('camera.camera_page') }}" class="feature-link">Open camera <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="2">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-diagram-3"></i></div>
+          <h5>AI Waste Classification</h5>
+          <p>A MobileNetV2 transfer-learning model trained on 8 waste classes: from cardboard to e-waste.</p>
+          <span class="feature-tags">
+            <span>Cardboard</span><span>Glass</span><span>Metal</span><span>+5 more</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4" data-reveal>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-recycle"></i></div>
+          <h5>Recycling Recommendations</h5>
+          <p>Every prediction comes with a disposal method, a recycling tip, and its environmental impact.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="1">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-bar-chart-line"></i></div>
+          <h5>Analytics Dashboard</h5>
+          <p>Track total predictions, category distribution, and average confidence over time.</p>
+          <a href="{{ url_for('dashboard.dashboard_page') }}" class="feature-link">View dashboard <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="2">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-clock-history"></i></div>
+          <h5>Prediction History</h5>
+          <p>Every scan is logged to SQLite so you can revisit what you classified and when.</p>
+          <a href="{{ url_for('dashboard.history_page') }}" class="feature-link">See history <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="row gy-4 pb-4">
+      <div class="col-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-2 mb-3" href="{{ url_for('main.home') }}">
+          <span class="brand-mark"><i class="bi bi-recycle"></i></span>
+          <span class="brand-text">EcoSort<span class="brand-accent">AI</span></span>
+        </a>
+        <p class="footer-tagline">
+          Point your camera at anything you're about to throw away. Our MobileNetV2 model
+          sorts it into 8 categories and tells you exactly how to dispose of it responsibly.
+        </p>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6 class="footer-heading">Classify</h6>
+        <ul class="footer-links">
+          <li><a href="{{ url_for('upload.upload_page') }}">Upload Image</a></li>
+          <li><a href="{{ url_for('camera.camera_page') }}">Live Camera</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6 class="footer-heading">Insights</h6>
+        <ul class="footer-links">
+          <li><a href="{{ url_for('dashboard.dashboard_page') }}">Dashboard</a></li>
+          <li><a href="{{ url_for('dashboard.history_page') }}">History</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4">
+        <h6 class="footer-heading">Waste Categories</h6>
+        <div class="footer-tags">
+          <span>Cardboard</span><span>E-Waste</span><span>Glass</span><span>Metal</span>
+          <span>Organic</span><span>Paper</span><span>Plastic</span><span>Trash</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+      <span>&copy; <span id="currentYear"></span> EcoSort AI. Built for a cleaner planet.</span>
+      <span class="footer-meta">Powered by TensorFlow &middot; MobileNetV2 &middot; Flask</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const nav = document.getElementById("mainNav");
+  const onScroll = function () {
+    if (window.scrollY > 12) {
+      nav.classList.add("is-scrolled");
+    } else {
+      nav.classList.remove("is-scrolled");
+    }
+  };
+  window.addEventListener("scroll", onScroll);
+  onScroll();
+
+  const yearEl = document.getElementById("currentYear");
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
+  }
+
+  const revealTargets = document.querySelectorAll("[data-reveal]");
+  if ("IntersectionObserver" in window && revealTargets.length) {
+    const observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    revealTargets.forEach(function (el) {
+      observer.observe(el);
+    });
+  } else {
+    revealTargets.forEach(function (el) {
+      el.classList.add("is-visible");
+    });
+  }
+});
+</script>
+</body>
+</html>

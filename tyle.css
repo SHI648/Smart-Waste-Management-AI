@@ -1,0 +1,198 @@
+:root {
+    --primary-grad: linear-gradient(135deg, #1f4037 0%, #99f2c8 100%);
+    --bg-dark: #0f172a;
+    --bg-light: #f8fafc;
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.25);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --success: #10b981;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    color: var(--text-main);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.navbar-glass {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    z-index: 1050;
+    transition: var(--transition);
+}
+
+.card-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
+    transition: var(--transition);
+}
+
+.card-glass:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    transition: var(--transition);
+}
+
+.btn-gradient:hover, .btn-gradient:focus {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-gradient:active {
+    transform: translateY(0);
+}
+
+.btn-glass {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.45);
+    color: var(--text-main);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    transform: rotate(45deg);
+    pointer-events: none;
+}
+
+.chart-wrapper {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.table-glass {
+    background: transparent;
+}
+
+.table-glass thead th {
+    background: rgba(255, 255, 255, 0.5);
+    border-bottom: 2px solid var(--glass-border);
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.table-glass tbody tr {
+    transition: var(--transition);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.table-glass tbody tr:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.footer-glass {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--glass-border);
+    margin-top: auto;
+    color: var(--text-muted);
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pulse-glow {
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+    }
+}
+
+@media (max-width: 768px) {
+    .card-glass {
+        padding: 16px !important;
+    }
+    
+    .btn-gradient, .btn-glass {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-glass, .btn-gradient, .btn-glass {
+        transition: none;
+    }
+    .card-glass:hover {
+        transform: none;
+    }
+    .fade-in-up, .pulse-glow {
+        animation: none;
+    }
+}
